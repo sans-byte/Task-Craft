@@ -1,0 +1,30 @@
+@font-face {
+  font-family: "ShadowHand";
+  src: url("//2ttf.com/webfont/UIswCwhB/webfont.ttf") format("truetype");
+}
+
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .nav-li {
+    @apply text-white hover:text-black cursor-pointer;
+  }
+
+  .pointer-cursor > * {
+    @apply cursor-pointer;
+  }
+}
+
+.font-family-shadowhand {
+  font-family: "ShadowHand";
+}
+
+.font-family-bebas {
+  font-family: "Bebas Neue", sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.1rem;
+}
