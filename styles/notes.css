@@ -1,0 +1,38 @@
+.codex-editor__redactor {
+  padding: 0 !important;
+}
+
+.ce-block__content {
+  max-width: inherit !important;
+}
+
+.codex-editor {
+  width: inherit;
+}
+
+#editorjs {
+  min-height: 40em;
+}
+
+@media (min-width: 768px) {
+  .ce-toolbar__actions {
+    right: 108%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .ce-toolbar__actions {
+    right: 128%;
+  }
+}
+
+@media (min-width: 1280px) {
+  .ce-toolbar__actions {
+    right: 148%;
+  }
+}
+@media (min-width: 1536px) {
+  .ce-toolbar__actions {
+    right: 120%;
+  }
+}

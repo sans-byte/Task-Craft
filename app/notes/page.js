@@ -1,37 +1,30 @@
 "use client";
-
 import Image from "next/image";
 import noteBanner from "@assets/images/note-banner.jpg";
-import { BsFillPencilFill } from "react-icons/bs";
-import {
-  FaBold,
-  FaItalic,
-  FaUnderline,
-  FaStrikethrough,
-  FaListUl,
-  FaListOl,
-  FaFileImage,
-} from "react-icons/fa";
+import { BsFillPencilFill, BsFillJournalBookmarkFill } from "react-icons/bs";
 import Input from "@components/Forms/Input";
 import Select from "@components/Forms/Select";
 import Button from "@components/Forms/Button";
 import ScrollToTopButton from "@components/ScrollToTopButton";
 import { useState } from "react";
+import Editor from "./editor";
 
 const Notes = () => {
   const create = true;
-  const list = [];
-  const textSizeList = ["Small", "Normal", "Medium", "Large", "Extra Large"];
-  const fontFamilyList = ["Sans Serif"];
-  const [note, setNote] = useState("");
+  const [data, setData] = useState();
 
-  const hadleBold = () => {};
-  const handleItalic = () => {};
-  const handleUnderLine = () => {};
-  const handleStrikeThrough = () => {};
-  const handleListUl = () => {};
-  const handleListOl = () => {};
-  const handleImage = () => {};
+  const save = async () => {
+    if (data) {
+      await data
+        .save()
+        .then((outputData) => {
+          console.log("Article data: ", outputData);
+        })
+        .catch((error) => {
+          console.log("Saving failed: ", error);
+        });
+    }
+  };
 
   return (
     <main className="w-full">
@@ -45,9 +38,8 @@ const Notes = () => {
         />
       </section>
       <section className="container mx-auto my-4">
-        <h1 className="text-5xl font-family-bebas">NOTES</h1>
+        <h1 className="text-5xl font-family-bebas ">NOTES</h1>
       </section>
-
       <section className="container mx-auto">
         {create ? (
           <div className="flex flex-col">
@@ -56,30 +48,18 @@ const Notes = () => {
               <Select
                 id={"folder"}
                 label={"Folder"}
-                list={list}
                 displayText={"Select Folder"}
                 border={"border-2"}
               />
             </div>
-            <nav className="my-4 p-3 border-slate-200 shadow-md flex flex-row gap-3 items-center pointer-cursor">
-              <Select defaultValue={"Sans Serif"} list={fontFamilyList} />
-              <Select defaultValue={"Normal"} list={textSizeList} />
-              <span className="text-gray-200"> | </span>
-              <FaBold onClick={hadleBold} />
-              <FaItalic onClick={handleItalic} />
-              <FaUnderline onClick={handleUnderLine} />
-              <FaStrikethrough onClick={handleStrikeThrough} />
-              <span className="text-gray-200"> | </span>
-              <FaListUl onClick={handleListUl} />
-              <FaListOl onClick={handleListOl} />
-              <span className="text-gray-200"> | </span>
-              <FaFileImage onClick={handleImage} />
-            </nav>
-            <seciton className="my-4">
-              <textarea className="w-full min-h-screen p-5 rounded-md shadow-md focus:outline-none border-transparent"></textarea>
-            </seciton>
-            <section className="mb-4">
-              <Button text={"Save"} size={"lg"} type={"submit"} />
+            <Editor setData={setData} />
+            <section>
+              <Button
+                text={"Save"}
+                size={"lg"}
+                type={"submit"}
+                onClick={save}
+              />
               <Button
                 text={"Cancel"}
                 size={"lg"}
@@ -89,7 +69,7 @@ const Notes = () => {
             </section>
           </div>
         ) : (
-          <div> show list </div>
+          <></>
         )}
       </section>
       <ScrollToTopButton />
