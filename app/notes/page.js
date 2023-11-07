@@ -36,9 +36,15 @@ const Notes = () => {
           }
           text={<BsFillPencilFill />}
         />
+        <Button
+          style={
+            "absolute bottom-0 sm:text-2xl bg-gradient-to-r from-indigo-500 to-pink-500 sm:p-5 m-3 mx-5 sm:mx-32 sm:my-5 p-3"
+          }
+          text={<BsFillJournalBookmarkFill />}
+        />
       </section>
       <section className="container mx-auto my-4">
-        <h1 className="text-5xl font-family-bebas ">NOTES</h1>
+        <h1 className="text-5xl font-family-bebas ms-">NOTES</h1>
       </section>
       <section className="container mx-auto">
         {create ? (
