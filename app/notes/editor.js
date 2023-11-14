@@ -7,7 +7,7 @@ import CodeTool from "@editorjs/code";
 import "@styles/notes.css";
 
 function Editor({ setData }) {
-  const ref = useRef();
+  const editorRef = useRef();
   const isReady = useRef(false); //prevent making mulitple editors
   let editor = { isReady: false };
   const initializeEditor = async () => {
@@ -17,6 +17,7 @@ function Editor({ setData }) {
     const Image = (await import("@editorjs/image")).default;
     const editor = new EditorJS({
       holder: "editorjs",
+      data:{},
       tools: {
         header: {
           class: Header,
@@ -68,11 +69,37 @@ function Editor({ setData }) {
             },
             captionPlaceholder: "Add a caption",
             uploader: {
-              uploadByFile: () => {
-                console.log("upload by file");
+              uploadByFile: (file) => {
+                // const imageRef = ref(imageDB, file.name + file.size.toString());
+                // const snapshot = await uploadBytes(imageRef, file);
+                // if (snapshot) {
+                //   const url = await getDownloadURL(snapshot.ref);
+                //   console.log(url);
+                //   return {
+                //     success: 1,
+                //     file: {
+                //       url: url,
+                //     },
+                //   };
+                // }
+                const blob = new Blob([file], { type: file.type });
+                const url = URL.createObjectURL(blob);
+                console.log(url);
+                return {
+                  success: 1,
+                  file: {
+                    url: url,
+                  },
+                };
               },
-              uploadByUrl: () => {
-                console.log("upload by url");
+              uploadByUrl: async (url) => {
+                console.log(url);
+                return {
+                  success: 1,
+                  file: {
+                    url: url,
+                  },
+                };
               },
             },
           },
@@ -98,8 +125,8 @@ function Editor({ setData }) {
       logLevel: "ERROR",
     });
 
-    ref.current = editor;
-    setData(ref.current);
+    editorRef.current = editor;
+    setData(editorRef.current);
   };
 
   useEffect(() => {
@@ -111,15 +138,15 @@ function Editor({ setData }) {
       isReady.current = true;
     }
     return () => {
-      if (ref.current) {
-        ref.current.destroy();
+      if (editorRef.current) {
+        editorRef.current.destroy();
       }
     };
   }, []);
 
   return (
     <>
-      <div className="border-2 rounded-md my-2 p-1">
+      <div className="border-[1px] border-slate-300 bg-slate-100 rounded-md my-2 p-1">
         <div id="editorjs" className="flex w-full"></div>
       </div>
     </>

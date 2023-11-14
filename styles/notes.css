@@ -28,11 +28,11 @@
 
 @media (min-width: 1280px) {
   .ce-toolbar__actions {
-    right: 148%;
+    right: 137%;
   }
 }
 @media (min-width: 1536px) {
   .ce-toolbar__actions {
-    right: 120%;
+    right: 148%;
   }
 }
