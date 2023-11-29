@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import Button from "./Forms/Button";
 import { BsArrowUp } from "react-icons/bs";
 
-const ScrollToTopButton = () => {
+function ScrollToTopButton() {
   const [scrollTopButton, setScrollTopButton] = useState(false);
   const handleScroll = async () => {
     const scrollHeight = document.documentElement.scrollHeight;
@@ -40,6 +40,6 @@ const ScrollToTopButton = () => {
       onClick={scrollToTop}
     />
   );
-};
+}
 
 export default ScrollToTopButton;

@@ -1,6 +1,6 @@
 import React from "react";
 
-const Select = ({
+function Select({
   id,
   label,
   list,
@@ -8,7 +8,9 @@ const Select = ({
   width,
   onChange,
   displayText,
-}) => {
+  values,
+  setValue,
+}) {
   return (
     <>
       <div className="font-family-bebas flex flex-start items-start flex-col">
@@ -17,12 +19,12 @@ const Select = ({
           id={id}
           defaultValue={defaultValue ? defaultValue : -1}
           className={`border-[1px] border-slate-300 px-2 py-[10px] rounded-md cursor-pointer hover:border-indigo-200 ${width} focus:outline-none`}
-          onChange={onChange}
+          onChange={(e) => setValue(e.target.value)}
         >
           {!defaultValue && <option value={-1}>{`${displayText}`}</option>}
           {Array.isArray(list) &&
             list.map((item, key) => (
-              <option key={key} value={item}>
+              <option key={key} value={values[key]}>
                 {item}
               </option>
             ))}
@@ -30,6 +32,6 @@ const Select = ({
       </div>
     </>
   );
-};
+}
 
 export default Select;

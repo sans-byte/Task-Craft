@@ -15,7 +15,7 @@ export async function GET(request, response) {
   try {
     const headers = new Headers();
     headers.set("Content-Type", "application/json");
-    const querySnapshot = await getDocs(collection(db, "users"));
+    const querySnapshot = await getDocs(collection(db, "notes"));
     querySnapshot.forEach((element) => {
       console.log(element.id);
     });
@@ -31,23 +31,23 @@ export async function GET(request, response) {
 
 export async function POST(request, response) {
   try {
-    const docRef = await addDoc(collection(db, "users"), {
-      first: "Ada",
-      last: "Lovelace",
-      born: 1815,
+    const data = await request.json();
+    const docRef = await addDoc(collection(db, "notes"), {
+      ...data,
     });
     console.log("Document written with ID: ", docRef.id);
-    return new Response(JSON.stringify(docRef), {
-      headers: new Headers(),
-    });
+    return new Response(JSON.stringify(docRef.id));
   } catch (e) {
     console.error("Error adding document: ", e);
+    return new Response(JSON.stringify(e));
   }
 }
 
 export async function PUT(request, response) {
   try {
-    const docRef = doc(db, "users", "dKrqY5zWAlEalGQdRFio");
+    const noteId = await request.json();
+    const docRef = doc(db, "users");
+    console.log("this put mapping logged");
     await updateDoc(docRef, {
       first: "Sanskar",
       last: "Lovelace",

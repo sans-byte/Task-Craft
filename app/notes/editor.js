@@ -1,12 +1,12 @@
 "use client";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import EditorJS from "@editorjs/editorjs";
 import Table from "@editorjs/table";
 import LinkTool from "@editorjs/link";
 import CodeTool from "@editorjs/code";
 import "@styles/notes.css";
 
-function Editor({ setData }) {
+function Editor({ setData, saveData, updateData }) {
   const editorRef = useRef();
   const isReady = useRef(false); //prevent making mulitple editors
   let editor = { isReady: false };
@@ -17,7 +17,7 @@ function Editor({ setData }) {
     const Image = (await import("@editorjs/image")).default;
     const editor = new EditorJS({
       holder: "editorjs",
-      data:{},
+      data: JSON.parse(localStorage.getItem("data")),
       tools: {
         header: {
           class: Header,
@@ -112,20 +112,33 @@ function Editor({ setData }) {
           },
         },
       },
+
       onReady: () => {
         console.log("Editor is ready!");
       },
 
-      onChange: (api, event) => {
-        console.log("Editor is changed!", event);
+      onChange: async (api, event) => {
+        const autoSave = localStorage.getItem("autoSave");
+        const notesData = await api.saver.save().then((data) => data);
+        localStorage.setItem("data", JSON.stringify(notesData));
+        console.log(notesData);
+        if (autoSave === "true") {
+          const docId = localStorage.getItem("currentNoteId");
+          if (docId) {
+            updateData(docId, notesData);
+          } else {
+            saveData(notesData);
+          }
+          console.log("Editor is changed!", event);
+        }
       },
 
       autofocus: true,
       placeholder: "Let's write something good today!!",
       logLevel: "ERROR",
     });
-
     editorRef.current = editor;
+    console.log(editor);
     setData(editorRef.current);
   };
 

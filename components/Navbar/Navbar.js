@@ -3,7 +3,7 @@ import Link from "next/link";
 import React from "react";
 import { GiCutDiamond, GiHamburgerMenu } from "react-icons/gi";
 
-const Navbar = () => {
+function Navbar() {
   const isSignedIn = false;
   return (
     <main className="fixed z-10 w-screen backdrop-blur-sm bg-white/20">
@@ -37,6 +37,6 @@ const Navbar = () => {
       </nav>
     </main>
   );
-};
+}
 
 export default Navbar;

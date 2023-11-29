@@ -1,7 +1,7 @@
 import React from "react";
 
-const Footer = () => {
+function Footer() {
   return <footer className="bg-slate-800 h-72">here goes the footer</footer>;
-};
+}
 
 export default Footer;

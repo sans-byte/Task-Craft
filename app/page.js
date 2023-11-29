@@ -1,8 +1,8 @@
 import React from "react";
-import banner from "@assets/images/banner.jpg";
+import banner from "@public/images/banner.jpg";
 import Image from "next/image";
 
-const Home = () => {
+function Home(){
   return (
     <>
       <main className="w-full">

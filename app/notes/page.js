@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import noteBanner from "@assets/images/note-banner.jpg";
+import noteBanner from "@public/images//note-banner.jpg";
 import { BsFillPencilFill, BsFillJournalBookmarkFill } from "react-icons/bs";
 import Input from "@components/Forms/Input";
 import Select from "@components/Forms/Select";
@@ -10,23 +10,81 @@ import ScrollToTopButton from "@components/ScrollToTopButton";
 import { useState } from "react";
 import Editor from "./editor";
 import ShowNotes from "./showNotes";
+import { saveNotes, updateNotes } from "@services/noteService";
+import Loader from "@components/Loader";
+import Alert from "@components/Alert";
 
-const Notes = () => {
+function Notes() {
+  const autoSave = localStorage.getItem("autoSave");
   const [create, setCreate] = useState(true);
+  const [loader, setLoader] = useState(false);
   const [data, setData] = useState();
-  const [toggle, setToggle] = useState(true);
+  const [autoSaveToggle, setAutoSaveToggle] = useState(
+    autoSave == "true" ? true : false
+  );
+  const [title, setTitle] = useState("");
+  const [folderId, setFolderId] = useState("");
+  const [decisionClose, setDecisionClose] = useState(false);
+  const [dialogClose, setDialogClose] = useState(false);
+  const [decisionClear, setDecisionClear] = useState(false);
+  const [dialogClear, setDialogClear] = useState(false);
 
-  const save = async () => {
-    if (data) {
-      await data
-        .save()
-        .then((outputData) => {
-          console.log("Article data: ", outputData);
-        })
-        .catch((error) => {
-          console.log("Saving failed: ", error);
-        });
+  //saving notes to DB
+  const save = async (data) => {
+    try {
+      setLoader(true);
+      console.log(data);
+      if (data) {
+        const notesDataObject = {
+          notesData: data,
+          folderId,
+          title,
+        };
+        const res = await saveNotes(notesDataObject);
+        localStorage.setItem("currentNoteId", res);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoader(false);
     }
+  };
+
+  //updating the notes by taking notes id from local storage
+  const update = async (id, data) => {
+    try {
+      setLoader(true);
+      const notesDataObject = {
+        notesData: data,
+        folderId,
+        title,
+      };
+      const res = await updateNotes(id, notesDataObject);
+      console.log(res);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoader(false);
+    }
+  };
+
+  const handleClose = (e) => {
+    e.preventDefault();
+    setDialogClose(true);
+  };
+
+  const handleClear = (e) => {
+    e.preventDefault();
+    setDialogClear(true);
+  };
+
+  const perforomClearTask = () => {
+    data.blocks.clear();
+  };
+
+  const perforomCloseTask = () => {
+    setCreate(false);
+    localStorage.removeItem("currentNoteId");
   };
 
   return (
@@ -55,55 +113,97 @@ const Notes = () => {
         {create ? (
           <div className="flex flex-col">
             <div className="flex justify-between">
-              <div className="flex gap-4">
+              <div className="flex gap-4 items-end">
                 <Input
                   label={"Title"}
                   placeholder={"Black Hole"}
                   type={"text"}
+                  value={title}
+                  setValue={setTitle}
                 />
                 <Select
                   id={"folder"}
                   label={"Folder"}
                   displayText={"Select Folder"}
+                  list={["Work", "Personal"]}
+                  values={[1, 2]}
+                  setValue={setFolderId}
                 />
+                <Loader addClasses="m-4" hidden={loader ? false : true} />
               </div>
-              <div className="flex gap-4 justify-end items-end max-md:hidden">
+              <div className="flex gap-4 justify-end items-end max-lg:hidden">
                 <div className="flex gap-2 justify-center items-center relative">
                   <input
                     type="checkbox"
                     className="peer sr-only"
-                    checked={toggle}
-                    onChange={(e) => (e.target.checked = toggle)}
+                    checked={autoSaveToggle}
+                    onChange={() => {
+                      e.target.checked = autoSaveToggle;
+                    }}
                   />
                   <div
                     className="h-6 w-12 bg-slate-200 rounded-full cursor-pointer flex justify-end peer-checked:justify-start peer-checked:bg-slate-800"
                     onClick={() => {
-                      setToggle(!toggle);
+                      localStorage.setItem("autoSave", !autoSaveToggle);
+                      setAutoSaveToggle(!autoSaveToggle);
                     }}
                   >
                     <button className="h-full w-6 bg-gradient-to-r to-pink-400 from-indigo-500  rounded-full"></button>
                   </div>
                   <p> Auto Save </p>
-                  <Button text={"Save"} size={"sm"} onClick={save} />
-                  <Button text={"Clear"} size={"sm"} color={"bg-slate-400"} />
+                  <Button
+                    text={"Save"}
+                    hoverColor={"bg-slate-900"}
+                    size={"sm"}
+                    onClick={() => {
+                      update(localStorage.getItem("currentNoteId"));
+                    }}
+                  />
+                  <Button
+                    text={"Clear"}
+                    size={"sm"}
+                    color={"bg-slate-400"}
+                    hoverColor={"bg-slate-600"}
+                    onClick={(e) => handleClear(e)}
+                  />
+                  <Button
+                    text={"Close"}
+                    size={"sm"}
+                    color={"bg-red-300"}
+                    hoverColor={"bg-red-500"}
+                    onClick={(e) => handleClose(e)}
+                  />
                 </div>
               </div>
             </div>
-            <Editor setData={setData} />
-            <div className="flex gap-4 justify-start items-end md:hidden">
+            <Editor setData={setData} saveData={save} updateData={update} />
+            <div className="flex gap-4 justify-start items-end lg:hidden">
               <div className="flex gap-2 justify-center items-center relative">
-                <Button text={"Save"} size={"sm"} />
+                <Button
+                  text={"Save"}
+                  size={"sm"}
+                  onClick={() => {
+                    update(localStorage.getItem("currentNoteId"));
+                  }}
+                />
                 <Button text={"Clear"} size={"sm"} color={"bg-slate-400"} />
+                <Button
+                  text={"Close"}
+                  size={"sm"}
+                  color={"bg-red-300"}
+                  hoverColor={"bg-red-500"}
+                  onClick={(e) => handleClose(e)}
+                />
                 <input
                   type="checkbox"
                   className="peer sr-only"
-                  checked={toggle}
-                  onChange={(e) => (e.target.checked = toggle)}
+                  checked={autoSaveToggle}
+                  onChange={(e) => (e.target.checked = autoSaveToggle)}
                 />
                 <div
                   className="h-6 w-12 bg-slate-200 rounded-full cursor-pointer flex justify-end peer-checked:justify-start peer-checked:bg-slate-800"
                   onClick={() => {
-                    setToggle(!toggle);
+                    setAutoSaveToggle(!autoSaveToggle);
                   }}
                 >
                   <button className="h-full w-6 bg-gradient-to-r to-pink-400 from-indigo-500  rounded-full"></button>
@@ -118,9 +218,29 @@ const Notes = () => {
           </>
         )}
       </section>
+      {dialogClose && (
+        <Alert
+          setDecision={setDecisionClose}
+          dialog={dialogClose}
+          setDialog={setDialogClose}
+          message={"Do you want to close this note? Your progress will be lost"}
+          buttonText={"Close"}
+          performTask={perforomCloseTask}
+        />
+      )}
+      {dialogClear && (
+        <Alert
+          setDecision={setDecisionClear}
+          dialog={dialogClear}
+          setDialog={setDialogClear}
+          message={"Do you want to clear this note? Your progress will be lost"}
+          buttonText={"Clear"}
+          performTask={perforomClearTask}
+        />
+      )}
       <ScrollToTopButton />
     </main>
   );
-};
+}
 
 export default Notes;
