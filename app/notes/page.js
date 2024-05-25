@@ -16,7 +16,7 @@ import Alert from "@components/Alert";
 
 function Notes() {
   const autoSave = localStorage.getItem("autoSave");
-  const [create, setCreate] = useState(true);
+  const [create, setCreate] = useState(false);
   const [loader, setLoader] = useState(false);
   const [data, setData] = useState();
   const [autoSaveToggle, setAutoSaveToggle] = useState(
@@ -71,6 +71,7 @@ function Notes() {
   const handleClose = (e) => {
     e.preventDefault();
     setDialogClose(true);
+    localStorage.removeItem("autoSave");
   };
 
   const handleClear = (e) => {
@@ -204,6 +205,7 @@ function Notes() {
                   className="h-6 w-12 bg-slate-200 rounded-full cursor-pointer flex justify-end peer-checked:justify-start peer-checked:bg-slate-800"
                   onClick={() => {
                     setAutoSaveToggle(!autoSaveToggle);
+                    localStorage.setItem("autoSave", !autoSaveToggle);
                   }}
                 >
                   <button className="h-full w-6 bg-gradient-to-r to-pink-400 from-indigo-500  rounded-full"></button>
