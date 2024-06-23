@@ -9,6 +9,7 @@ import { getStorage } from "firebase/storage";
 const firebaseConfig = {
   apiKey: "AIzaSyAOhoEBmzjnC9t6V1aHvZuTYMd3QaECJwA",
   authDomain: "next-todo-35097.firebaseapp.com",
+  databaseURL: "https://next-todo-35097-default-rtdb.firebaseio.com",
   projectId: "next-todo-35097",
   storageBucket: "next-todo-35097.appspot.com",
   messagingSenderId: "431377497531",
