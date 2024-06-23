@@ -68,7 +68,9 @@ function ShowNotes() {
       <div className="my-12 grid lg:grid-cols-5 gap-4">
         {folders &&
           folders.length > 0 &&
-          folders.map((ele) => <Folder folderName={ele.folderName} />)}
+          folders.map((ele, key) => (
+            <Folder key={key} folderName={ele.folderName} />
+          ))}
       </div>
       {dialog && (
         <Prompt
