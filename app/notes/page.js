@@ -1,5 +1,4 @@
 "use client";
-
 import Image from "next/image";
 import noteBanner from "@public/images//note-banner.jpg";
 import { BsFillPencilFill, BsFillJournalBookmarkFill } from "react-icons/bs";
@@ -34,7 +33,7 @@ function Notes() {
     try {
       setLoader(true);
       console.log(data);
-      if (data) {
+      if (data && folderId && title) {
         const notesDataObject = {
           notesData: data,
           folderId,
@@ -42,6 +41,8 @@ function Notes() {
         };
         const res = await saveNotes(notesDataObject);
         localStorage.setItem("currentNoteId", res);
+      } else {
+        console.log("Provide the title data and folder");
       }
     } catch (error) {
       console.error(error);
@@ -121,6 +122,7 @@ function Notes() {
                   type={"text"}
                   value={title}
                   setValue={setTitle}
+                  required={true}
                 />
                 <Select
                   id={"folder"}
@@ -129,6 +131,7 @@ function Notes() {
                   list={["Work", "Personal"]}
                   values={[1, 2]}
                   setValue={setFolderId}
+                  required={true}
                 />
                 <Loader addClasses="m-4" hidden={loader ? false : true} />
               </div>
@@ -157,7 +160,8 @@ function Notes() {
                     hoverColor={"bg-slate-900"}
                     size={"sm"}
                     onClick={() => {
-                      update(localStorage.getItem("currentNoteId"));
+                      // update(localStorage.getItem("currentNoteId"));
+                      save(data);
                     }}
                   />
                   <Button
@@ -184,7 +188,8 @@ function Notes() {
                   text={"Save"}
                   size={"sm"}
                   onClick={() => {
-                    update(localStorage.getItem("currentNoteId"));
+                    // update(localStorage.getItem("currentNoteId"));
+                    save(data);
                   }}
                 />
                 <Button text={"Clear"} size={"sm"} color={"bg-slate-400"} />
