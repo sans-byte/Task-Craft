@@ -27,7 +27,9 @@ function Input({
           placeholder={placeholder}
           value={value}
           required
-          onChange={(e) => setValue(e.target.value)}
+          onChange={(e) => {
+            setValue(e.target.value);
+          }}
         />
       </div>
     </>

@@ -69,7 +69,7 @@ function ShowNotes() {
         {folders &&
           folders.length > 0 &&
           folders.map((ele, key) => (
-            <Folder key={key} folderName={ele.folderName} />
+            <Folder key={key} folderName={ele.data.folderName} />
           ))}
       </div>
       {dialog && (

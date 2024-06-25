@@ -14,7 +14,12 @@ const db = getFirestore(app);
 export async function GET(request, response) {
   try {
     const querySnapshot = await getDocs(collection(db, "folders"));
-    const data = querySnapshot.docs.map((doc) => doc.data());
+    const data = querySnapshot.docs.map((doc) => {
+      return {
+        data: doc.data(),
+        id: doc.id,
+      };
+    });
     return new Response(JSON.stringify(data), {
       status: 200,
       headers: {
@@ -46,22 +51,18 @@ export async function POST(request, response) {
   }
 }
 
-// export async function PUT(request, response) {
-//   try {
-//     const noteId = await request.json();
-//     const docRef = doc(db, "users");
-//     console.log("this put mapping logged");
-//     await updateDoc(docRef, {
-//       first: "Sanskar",
-//       last: "Lovelace",
-//       born: 1815,
-//     });
-//     return new Response(JSON.stringify(docRef));
-//   } catch (error) {
-//     console.error(error);
-//     return new Response(JSON.stringify(error));
-//   }
-// }
+export async function PUT(request, response) {
+  try {
+    const data = await request.json();
+    console.log(data);
+    const docRef = doc(db, "folders", data.id);
+    await updateDoc(docRef, data.data);
+    return new Response(JSON.stringify(docRef));
+  } catch (error) {
+    console.error(error);
+    return new Response(JSON.stringify(error));
+  }
+}
 
 // export async function DELETE(request, response) {
 //   try {
