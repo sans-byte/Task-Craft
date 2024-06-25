@@ -6,12 +6,17 @@ import Input from "@components/Forms/Input";
 import Select from "@components/Forms/Select";
 import Button from "@components/Forms/Button";
 import ScrollToTopButton from "@components/ScrollToTopButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Editor from "./editor";
 import ShowNotes from "./showNotes";
 import { saveNotes, updateNotes } from "@services/noteService";
 import Loader from "@components/Loader";
 import Alert from "@components/Alert";
+import {
+  createFolder,
+  fetchFolders,
+  updateFolder,
+} from "@services/folderService";
 
 function Notes() {
   const autoSave = localStorage.getItem("autoSave");
@@ -22,26 +27,60 @@ function Notes() {
     autoSave == "true" ? true : false
   );
   const [title, setTitle] = useState("");
-  const [folderId, setFolderId] = useState("");
+  const [selectedFolder, setSelectedFolder] = useState({});
   const [decisionClose, setDecisionClose] = useState(false);
   const [dialogClose, setDialogClose] = useState(false);
   const [decisionClear, setDecisionClear] = useState(false);
   const [dialogClear, setDialogClear] = useState(false);
+  const [showTitleError, setShowTitleError] = useState(false);
+  const [showFolderError, setShowFolderError] = useState(false);
+  const [folders, setFolders] = useState([]);
+  const [folderData, setFolderData] = useState([]);
+  const [folderIndex, setFolderIndex] = useState([]);
+
+  console.log(selectedFolder);
+
+  //fetching folders from db to show in the dropdown
+  const getFolders = async () => {
+    try {
+      const res = await fetchFolders();
+      setFolderData(res);
+      const folderNames = res.map((f) => f.data.folderName);
+      setFolders(folderNames);
+      setFolderIndex(
+        Array(folderNames.length)
+          .fill(null)
+          .map((_, i) => i)
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getFolders();
+  }, []);
 
   //saving notes to DB
   const save = async (data) => {
     try {
       setLoader(true);
-      console.log(data);
-      if (data && folderId && title) {
+      if (data && selectedFolder && title) {
         const notesDataObject = {
           notesData: data,
-          folderId,
+          folderName: folderData[selectedFolder].data.folderName,
           title,
         };
-        const res = await saveNotes(notesDataObject);
-        localStorage.setItem("currentNoteId", res);
+        const noteId = await saveNotes(notesDataObject);
+        localStorage.setItem("currentNoteId", noteId);
+        //every time we save a file we have to add that to a folder
+        // so we need noteId and folder refrence
+        folderData[selectedFolder].data.files.push(noteId);
+        const updateFolderRes = await updateFolder(folderData[selectedFolder]);
+        console.log(updateFolderRes);
       } else {
+        !selectedFolder && setShowFolderError(true);
+        !title && setShowTitleError(true);
         console.log("Provide the title data and folder");
       }
     } catch (error) {
@@ -57,7 +96,7 @@ function Notes() {
       setLoader(true);
       const notesDataObject = {
         notesData: data,
-        folderId,
+        selectedFolder,
         title,
       };
       const res = await updateNotes(id, notesDataObject);
@@ -123,15 +162,17 @@ function Notes() {
                   value={title}
                   setValue={setTitle}
                   required={true}
+                  showError={showTitleError}
                 />
                 <Select
                   id={"folder"}
                   label={"Folder"}
                   displayText={"Select Folder"}
-                  list={["Work", "Personal"]}
-                  values={[1, 2]}
-                  setValue={setFolderId}
+                  list={folders}
+                  values={folderIndex}
+                  setValue={setSelectedFolder}
                   required={true}
+                  showError={showFolderError}
                 />
                 <Loader addClasses="m-4" hidden={loader ? false : true} />
               </div>
@@ -160,8 +201,9 @@ function Notes() {
                     hoverColor={"bg-slate-900"}
                     size={"sm"}
                     onClick={() => {
-                      // update(localStorage.getItem("currentNoteId"));
-                      save(data);
+                      const currentNoteId =
+                        localStorage.getItem("currentNoteId");
+                      currentNoteId ? update(currentNoteId, data) : save(data);
                     }}
                   />
                   <Button
@@ -188,8 +230,8 @@ function Notes() {
                   text={"Save"}
                   size={"sm"}
                   onClick={() => {
-                    // update(localStorage.getItem("currentNoteId"));
-                    save(data);
+                    const currentNoteId = localStorage.getItem("currentNoteId");
+                    currentNoteId ? update(currentNoteId, data) : save(data);
                   }}
                 />
                 <Button text={"Clear"} size={"sm"} color={"bg-slate-400"} />
