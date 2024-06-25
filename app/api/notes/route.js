@@ -46,14 +46,15 @@ export async function POST(request, response) {
 export async function PUT(request, response) {
   try {
     const noteId = await request.json();
-    const docRef = doc(db, "users");
-    console.log("this put mapping logged");
-    await updateDoc(docRef, {
-      first: "Sanskar",
-      last: "Lovelace",
-      born: 1815,
-    });
-    return new Response(JSON.stringify(docRef));
+    const docRef = doc(db, "notes");
+    console.log(docRef);
+    // console.log("this put mapping logged");
+    // await updateDoc(docRef, {
+    //   first: "Sanskar",
+    //   last: "Lovelace",
+    //   born: 1815,
+    // });
+    // return new Response(JSON.stringify(docRef));
   } catch (error) {
     console.error(error);
     return new Response(JSON.stringify(error));
