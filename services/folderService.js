@@ -17,3 +17,12 @@ export const fetchFolders = async () => {
     return error;
   }
 };
+
+export const updateFolder = async (payload) => {
+  try {
+    const res = await axiosInstance.put("/api/notes/folder", payload);
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};
