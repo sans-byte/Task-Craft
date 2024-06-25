@@ -75,7 +75,10 @@ function Notes() {
         localStorage.setItem("currentNoteId", noteId);
         //every time we save a file we have to add that to a folder
         // so we need noteId and folder refrence
-        folderData[selectedFolder].data.files.push(noteId);
+        folderData[selectedFolder].data.files.push({
+          noteId,
+          title: notesDataObject.title,
+        });
         const updateFolderRes = await updateFolder(folderData[selectedFolder]);
         console.log(updateFolderRes);
       } else {
